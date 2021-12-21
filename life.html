@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>g@me of life🌸✨🍓</title>
+</head>
+
+<body>
+ 
+<canvas id="myCanvas" width="400px" height="400px" style="border:1px solid #FFFFFF;">
+Your browser does not support the canvas element.
+</canvas>
+ 
+<script>
+	function draw(){
+		for(let i = 0; i < fieldSize; i++)
+			for(let j = 0; j < fieldSize; j++){
+				if (currentField[i][j] == 1){
+					ctx.fillStyle = "#ff00cc";
+					ctx.fillRect(i * cellSize,j * cellSize, cellSize, cellSize); //сдвиг в бок, сдвиг сверху вниз, ось ординат, ось абсцисс
+					}
+				else{
+					ctx.fillStyle = "#99ff66";
+					ctx.fillRect(i * cellSize,j * cellSize, cellSize, cellSize);
+				}
+			}
+	}
+ 
+	function neighborCount(x, y){
+        let count = 0;
+        for (let i = -1; i <=1; i++)
+            for (let j = -1; j <=1; j++){
+                if ((i==0) && (j ==0))
+                    continue;
+                else
+                    count += currentField[(x+i+fieldSize)%fieldSize][(y+j+fieldSize)%fieldSize];
+			}
+        return count;
+    }
+ 
+	function nextGen(){
+		for(let i = 0; i < fieldSize; i++)
+			for(let j = 0; j < fieldSize; j++){	
+				if (currentField[i][j]==1){
+					if (neighborCount(i, j)==2 || neighborCount(i, j)==3)
+						nextField[i][j]=1;
+					else
+						nextField[i][j]=0;
+				}
+				else{
+					if (neighborCount(i, j)==3)
+						nextField[i][j]=1;
+					else
+						nextField[i][j]=0;
+				}
+			}
+
+		for(let i = 0; i < fieldSize; i++)
+			for(let j = 0; j < fieldSize; j++)
+				currentField[i][j] = nextField[i][j];
+
+		draw();
+	}
+	
+	let fieldSize = 20;// cells in field
+	let cellSize = 20;// pixels in cell
+	let currentField = new Array(fieldSize);
+	let nextField = new Array(fieldSize);
+	for(let i = 0; i < fieldSize; i++){
+		currentField[i] = new Array(fieldSize);
+		nextField[i] = new Array(fieldSize);
+	};
+ 
+	let canvas = document.getElementById("myCanvas");
+	let ctx = canvas.getContext("2d");
+ 
+	// for(let i = 0; i < fieldSize; i++)
+	// 	for(let j = 0; j < fieldSize; j++){
+	// 		currentField[i][j] = 1 * (Math.random() > 0.5)//1 - alive, 0 - dead
+	// 		nextField[i][j]=0;
+	// 	}
+	
+	//глайдер из википедии
+	for(let i = 0; i < fieldSize; i++)
+		for(let j = 0; j < fieldSize; j++){
+			nextField[i][j]=0;
+			if ((i==0 && j==2)||(i==1 && j==0)||(i==1&&j==2)||(i==2&&j==1)||(i==2&&j==2)) 
+				currentField[i][j] = 1;
+			else
+				currentField[i][j] = 0;
+		}
+	draw();
+ 
+	let tm = setInterval(nextGen, 500);
+ 
+	</script>
+</body>
+</html>
